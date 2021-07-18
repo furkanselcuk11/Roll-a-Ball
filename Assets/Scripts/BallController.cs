@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class BallController : MonoBehaviour
 {
-    Rigidbody physics;
+    Rigidbody rb;
     public float speed;
 
     int counter=0;
@@ -14,9 +14,13 @@ public class BallController : MonoBehaviour
     public Text counterText;
     public Text gameOverText;
 
+    private CollectedObject[] allObject;
+
     void Start()
     {
-        physics = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        allObject = FindObjectsOfType<CollectedObject>();   // Sanhe üzerindeki toplanacak obje sayýsý
+        totalColletObject = allObject.Length;   // Sanhe üzerindeki toplanacak obje sayýsýný "totalColletObject" deðiþkenine aktarýr
     }
      void FixedUpdate()
     {
@@ -24,21 +28,19 @@ public class BallController : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
 
         Vector3 vec = new Vector3(horizontal, 0, vertical);
-        physics.AddForce(vec * speed);
-        Debug.Log("hýz:"+speed);
-
+        rb.AddForce(vec * speed);
     }
 
      void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "collected")    // Çarpýlan objenin tagý ayný ise iþlem yap
+        if (other.gameObject.tag == "collected")    // Çarpýlan objenin tagý "collected" ise iþlem yap
         {
             Destroy(other.gameObject);  // Çarpýlan objeyi yok et
-            counter++;
+            counter++;  // Counter bir arttýr
             counterText.text = "Skor: " + counter;
             
 
-            if (counter == totalColletObject)
+            if (counter == totalColletObject)   // Toplanan obje sayýsý toplam obje sayýsýna eþitse oyun biter
             {
                 gameOverText.text = "Oyun Bitti!!!";
                 Time.timeScale = 0.0f;
